@@ -8,7 +8,7 @@ import (
 	"golang.org/x/tools/go/ast/inspector"
 )
 
-const doc = "withstackcheck is ..."
+const doc = "withstackcheck checks that errors from external packages are wrapped with stacktrace, and that errors from internal packages are not wrapped with stacktrace."
 
 // Analyzer is ...
 var Analyzer = &analysis.Analyzer{
