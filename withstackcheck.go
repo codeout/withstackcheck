@@ -3,14 +3,15 @@ package withstackcheck
 import (
 	"go/ast"
 
+	"github.com/k0kubun/pp"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
-	"golang.org/x/tools/go/ast/inspector"
+
+	"github.com/codeout/withstackcheck/inspector"
 )
 
 const doc = "withstackcheck checks that errors from external packages are wrapped with stacktrace, and that errors from internal packages are not wrapped with stacktrace."
 
-// Analyzer is ...
 var Analyzer = &analysis.Analyzer{
 	Name: "withstackcheck",
 	Doc:  doc,
@@ -21,18 +22,20 @@ var Analyzer = &analysis.Analyzer{
 }
 
 func run(pass *analysis.Pass) (any, error) {
-	inspctr := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
+	checker := inspector.New(
+		pass,
+		"error without stacktrace returned from external package",
+		"error with stacktrace returned from internal package",
+	)
 
-	nodeFilter := []ast.Node{
-		(*ast.Ident)(nil),
-	}
-
-	inspctr.Preorder(nodeFilter, func(n ast.Node) {
-		if n, ok := n.(*ast.Ident); ok {
-			if n.Name == "gopher" {
-				pass.Reportf(n.Pos(), "identifier is gopher")
-			}
+	// find func()
+	checker.PreorderedFuncDecl(func(fnNode ast.Node) {
+		if _, ok := fnNode.(*ast.FuncDecl); !ok {
+			return
 		}
+
+		pp.Println(fnNode, "<<< whole func")
+		checker.CheckErrorReturns(fnNode)
 	})
 
 	return nil, nil
