@@ -1,21 +1,13 @@
 package inspector
 
 import (
-	"fmt"
 	"go/ast"
 )
 
 // getAssignExprToObject scans right-hands of assignments and returns the expression that is assigned to the given object.
 // Note that multiple vars might be assigned in a single assignment.
 func (c *WithStackChecker) getAssignExprToObject(obj *ast.Object) ast.Expr {
-	switch decl := obj.Decl.(type) {
-	case *ast.AssignStmt:
-		return c.getAssignExprInAssignStmt(decl, obj.Decl)
-	case *ast.ValueSpec:
-		return c.findAssignExprInFunction(decl)
-	default:
-		panic(fmt.Sprintf("Unimplemented type: %T", decl))
-	}
+	return c.findAssignExprInFunction(obj.Decl)
 }
 
 // getAssignExprInAssignStmt scans right-hands of assignments and returns the expression that is assigned to the given object.
