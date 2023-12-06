@@ -41,7 +41,7 @@ func (c *WithStackChecker) getAssignExprInAssignStmt(assign *ast.AssignStmt, obj
 }
 
 // findAssignExprInFunction scans the whole function node to find the last assignment of the given spec.
-func (c *WithStackChecker) findAssignExprInFunction(spec *ast.ValueSpec) ast.Expr {
+func (c *WithStackChecker) findAssignExprInFunction(obj any) ast.Expr {
 	var ret ast.Expr
 
 	ast.Inspect(c.funcNode, func(node ast.Node) bool {
@@ -50,15 +50,15 @@ func (c *WithStackChecker) findAssignExprInFunction(spec *ast.ValueSpec) ast.Exp
 			return true
 		}
 
-		// find spec in left-hands
+		// find object in left-hands
 		for _, expr := range as.Lhs {
 			ident, ok := expr.(*ast.Ident)
-			if !ok || ident.Obj == nil || ident.Obj.Decl != spec ||
+			if !ok || ident.Obj == nil || ident.Obj.Decl != obj ||
 				as.Pos() >= c.pos {
 				continue
 			}
 
-			ret = c.getAssignExprInAssignStmt(as, spec)
+			ret = c.getAssignExprInAssignStmt(as, obj)
 			return false
 		}
 
