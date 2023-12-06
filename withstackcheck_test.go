@@ -14,4 +14,5 @@ func TestAnalyzer(t *testing.T) {
 	testdata := testutil.WithModules(t, analysistest.TestData(), nil)
 	analysistest.Run(t, testdata, withstackcheck.Analyzer, "withstackcheck/assign_var")
 	analysistest.Run(t, testdata, withstackcheck.Analyzer, "withstackcheck/reassign_var")
+	analysistest.Run(t, testdata, withstackcheck.Analyzer, "withstackcheck/interface")
 }
