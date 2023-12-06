@@ -6,6 +6,6 @@ import (
 
 // checkIdent checks the identifier and report.
 func (c *WithStackChecker) checkIdent(ident *ast.Ident) {
-	expr := c.getAssignExpr(ident.Obj)
+	expr := c.getAssignExprInObject(ident.Obj)
 	c.checkExpr(expr)
 }

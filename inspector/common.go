@@ -5,9 +5,9 @@ import (
 	"go/ast"
 )
 
-// getAssignExpr scans right-hands of assignments and returns the expression that is assigned to the given object.
+// getAssignExprInObject scans right-hands of assignments and returns the expression that is assigned to the given object.
 // Note that multiple vars might be assigned in a single assignment.
-func (c *WithStackChecker) getAssignExpr(obj *ast.Object) ast.Expr {
+func (c *WithStackChecker) getAssignExprInObject(obj *ast.Object) ast.Expr {
 	switch decl := obj.Decl.(type) {
 	case *ast.AssignStmt:
 		switch len(decl.Rhs) {
