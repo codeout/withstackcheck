@@ -19,6 +19,11 @@ type WithStackChecker struct {
 	inspector         *inspector.Inspector
 	withoutStackError string
 	withStackError    string
+
+	// current context
+	funcNode    ast.Node
+	pos         token.Pos // original position of the return statement
+	inWithStack bool
 }
 
 func (c *WithStackChecker) PreorderedFuncDecl(f func(ast.Node)) {
@@ -38,7 +43,8 @@ func (c *WithStackChecker) CheckErrorReturns(fnNode ast.Node) {
 				continue
 			}
 
-			c.checkExpr(expr, expr.Pos())
+			c.setContext(fnNode, ret.Pos()) // set current context
+			c.checkExpr(expr)
 		}
 
 		return false
@@ -46,15 +52,25 @@ func (c *WithStackChecker) CheckErrorReturns(fnNode ast.Node) {
 }
 
 // checkExpr checks the generic expression and report.
-func (c *WithStackChecker) checkExpr(expr ast.Expr, pos token.Pos) {
+func (c *WithStackChecker) checkExpr(expr ast.Expr) {
 	switch expr := expr.(type) {
 	case *ast.Ident:
-		c.checkIdent(expr, pos)
+		c.checkIdent(expr)
 	case *ast.CallExpr:
-		c.checkCallExpr(expr, pos)
+		c.checkCallExpr(expr)
 	default:
 		panic(fmt.Sprintf("Unimplemented type: %T", expr))
 	}
+}
+
+func (c *WithStackChecker) setContext(fnNode ast.Node, pos token.Pos) {
+	c.funcNode = fnNode
+	c.pos = pos
+	c.inWithStack = false
+}
+
+func (c *WithStackChecker) enterWithStack() {
+	c.inWithStack = true
 }
 
 func (c *WithStackChecker) isError(expr ast.Expr) bool {

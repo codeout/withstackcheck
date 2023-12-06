@@ -3,20 +3,18 @@ package inspector
 import (
 	"fmt"
 	"go/ast"
-	"go/token"
 )
 
 // checkCallExpr checks the call expression and report.
-// It requires pos which looks unnecessary, but it's needed to report the original position.
-// checkIndent() strips expressions and also the original position for example.
-func (c *WithStackChecker) checkCallExpr(callExpr *ast.CallExpr, pos token.Pos) {
-	if c.isWithStack(callExpr) {
-		// don't call other checkXXX() inside as it's an argument of errors.WithStack()
+func (c *WithStackChecker) checkCallExpr(callExpr *ast.CallExpr) {
+	if c.inWithStack || c.isWithStack(callExpr) {
+		c.enterWithStack()
+
 		switch expr := callExpr.Args[0].(type) {
 		case *ast.Ident:
 			e := c.getAssignExpr(expr.Obj)
 			if !c.isExternalPackage(e) {
-				c.pass.Reportf(pos, c.withStackError)
+				c.pass.Reportf(c.pos, c.withStackError)
 			}
 		default:
 			panic(fmt.Sprintf("Unimplemented type: %T", expr))
@@ -26,7 +24,7 @@ func (c *WithStackChecker) checkCallExpr(callExpr *ast.CallExpr, pos token.Pos) 
 	}
 
 	if c.isExternalPackage(callExpr) {
-		c.pass.Reportf(pos, c.withoutStackError)
+		c.pass.Reportf(c.pos, c.withoutStackError)
 	}
 }
 
