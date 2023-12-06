@@ -8,17 +8,17 @@ import (
 
 func externalError() error {
 	// var declaration
-	//var err error
-	//
-	//_, err = json.Marshal(nil)
-	//if err != nil {
-	//	return err // want `error without stacktrace returned from external package`
-	//}
-	//
-	//_, err = json.Marshal(nil)
-	//if err != nil {
-	//	return errors.WithStack(err)
-	//}
+	var err error
+
+	_, err = json.Marshal(nil)
+	if err != nil {
+		return err // want `error without stacktrace returned from external package`
+	}
+
+	_, err = json.Marshal(nil)
+	if err != nil {
+		return errors.WithStack(err)
+	}
 
 	// short declaration
 	if _, err := json.Marshal(nil); err != nil {
@@ -33,6 +33,19 @@ func externalError() error {
 }
 
 func internalError() error {
+	// var declaration
+	var err error
+
+	err = throw()
+	if err != nil {
+		return err
+	}
+
+	err = throw()
+	if err != nil {
+		return errors.WithStack(err) // want `error with stacktrace returned from internal package`
+	}
+
 	// short declaration
 	if err := throw(); err != nil {
 		return err
