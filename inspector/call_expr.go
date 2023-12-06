@@ -12,7 +12,7 @@ func (c *WithStackChecker) checkCallExpr(callExpr *ast.CallExpr) {
 
 		switch expr := callExpr.Args[0].(type) {
 		case *ast.Ident:
-			e := c.getAssignExprInObject(expr.Obj)
+			e := c.getAssignExprToObject(expr.Obj)
 			if !c.isExternalPackage(e) {
 				c.pass.Reportf(c.pos, c.withStackError)
 			}

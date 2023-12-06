@@ -5,14 +5,14 @@ import (
 	"go/ast"
 )
 
-// getAssignExprInObject scans right-hands of assignments and returns the expression that is assigned to the given object.
+// getAssignExprToObject scans right-hands of assignments and returns the expression that is assigned to the given object.
 // Note that multiple vars might be assigned in a single assignment.
-func (c *WithStackChecker) getAssignExprInObject(obj *ast.Object) ast.Expr {
+func (c *WithStackChecker) getAssignExprToObject(obj *ast.Object) ast.Expr {
 	switch decl := obj.Decl.(type) {
 	case *ast.AssignStmt:
 		return c.getAssignExprInAssignStmt(decl, obj.Decl)
 	case *ast.ValueSpec:
-		return c.getAssignExprFromValueSpec(decl)
+		return c.findAssignExprInFunction(decl)
 	default:
 		panic(fmt.Sprintf("Unimplemented type: %T", decl))
 	}
@@ -40,8 +40,8 @@ func (c *WithStackChecker) getAssignExprInAssignStmt(assign *ast.AssignStmt, obj
 	return nil
 }
 
-// getAssignExprFromValueSpec scans the whole function node to find the assignment of the given spec.
-func (c *WithStackChecker) getAssignExprFromValueSpec(spec *ast.ValueSpec) ast.Expr {
+// findAssignExprInFunction scans the whole function node to find the last assignment of the given spec.
+func (c *WithStackChecker) findAssignExprInFunction(spec *ast.ValueSpec) ast.Expr {
 	var ret ast.Expr
 
 	ast.Inspect(c.funcNode, func(node ast.Node) bool {
