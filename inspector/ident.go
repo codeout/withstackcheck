@@ -12,6 +12,6 @@ func (c *WithStackChecker) checkIdent(ident *ast.Ident) {
 		return
 	}
 
-	expr := c.getAssignExprToObject(ident.Obj)
+	expr := c.findAssignExprInFunction(ident.Obj.Decl)
 	c.checkExpr(expr)
 }

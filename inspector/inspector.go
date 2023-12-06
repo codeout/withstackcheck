@@ -10,10 +10,6 @@ import (
 	"golang.org/x/tools/go/ast/inspector"
 )
 
-var funcDeclFilter = []ast.Node{
-	(*ast.FuncDecl)(nil),
-}
-
 type WithStackChecker struct {
 	pass              *analysis.Pass
 	inspector         *inspector.Inspector
@@ -27,7 +23,10 @@ type WithStackChecker struct {
 }
 
 func (c *WithStackChecker) PreorderedFuncDecl(f func(ast.Node)) {
-	c.inspector.Preorder(funcDeclFilter, f)
+	c.inspector.Preorder(
+		[]ast.Node{(*ast.FuncDecl)(nil)},
+		f,
+	)
 }
 
 // CheckErrorReturns returns all return statements that return an error.
