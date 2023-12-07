@@ -30,12 +30,13 @@ func run(pass *analysis.Pass) (any, error) {
 
 	// find func()
 	checker.PreorderedFuncDecl(func(f ast.Node) {
-		if _, ok := f.(*ast.FuncDecl); !ok {
+		fnDecl, ok := f.(*ast.FuncDecl)
+		if !ok {
 			return
 		}
 
 		pp.Println(f, "<<< whole func")
-		checker.CheckErrorReturns(f)
+		checker.CheckErrorReturns(fnDecl)
 	})
 
 	return nil, nil

@@ -17,7 +17,7 @@ type WithStackChecker struct {
 	withStackError    string
 
 	// current context
-	funcNode    ast.Node
+	funcNode    *ast.FuncDecl
 	pos         token.Pos // original position of the return statement
 	inWithStack bool
 }
@@ -30,7 +30,7 @@ func (c *WithStackChecker) PreorderedFuncDecl(f func(ast.Node)) {
 }
 
 // CheckErrorReturns returns all return statements that return an error.
-func (c *WithStackChecker) CheckErrorReturns(fnNode ast.Node) {
+func (c *WithStackChecker) CheckErrorReturns(fnNode *ast.FuncDecl) {
 	ast.Inspect(fnNode, func(node ast.Node) bool {
 		ret, ok := node.(*ast.ReturnStmt)
 		if !ok {
@@ -62,7 +62,7 @@ func (c *WithStackChecker) checkExpr(expr ast.Expr) {
 	}
 }
 
-func (c *WithStackChecker) setContext(fnNode ast.Node, pos token.Pos) {
+func (c *WithStackChecker) setContext(fnNode *ast.FuncDecl, pos token.Pos) {
 	c.funcNode = fnNode
 	c.pos = pos
 	c.inWithStack = false
