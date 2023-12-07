@@ -6,6 +6,12 @@ import (
 
 // findAssignExprInFunction scans the whole function node to find the last assignment of the given spec.
 func (c *WithStackChecker) findAssignExprInFunction(obj any) ast.Expr {
+	return c.findAssignExprInFunctionGeneric(obj, func(ident *ast.Ident) bool {
+		return ident.Obj == nil || ident.Obj.Decl != obj
+	})
+}
+
+func (c *WithStackChecker) findAssignExprInFunctionGeneric(obj any, skipCond func(ident *ast.Ident) bool) ast.Expr {
 	var ret ast.Expr
 
 	ast.Inspect(c.funcNode, func(node ast.Node) bool {
@@ -17,8 +23,7 @@ func (c *WithStackChecker) findAssignExprInFunction(obj any) ast.Expr {
 		// find object in left-hands
 		for _, expr := range as.Lhs {
 			ident, ok := expr.(*ast.Ident)
-			if !ok || ident.Obj == nil || ident.Obj.Decl != obj ||
-				as.Pos() >= c.pos {
+			if !ok || as.Pos() >= c.pos || skipCond(ident) {
 				continue
 			}
 

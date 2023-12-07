@@ -38,16 +38,20 @@ func (c *WithStackChecker) CheckErrorReturns(fnNode *ast.FuncDecl) {
 		}
 
 		for _, expr := range ret.Results {
-			if !c.isError(expr) {
-				continue
-			}
-
-			c.setContext(fnNode, ret.Pos()) // set current context
-			c.checkExpr(expr)
+			c.checkIfError(fnNode, expr)
 		}
 
 		return false
 	})
+}
+
+func (c *WithStackChecker) checkIfError(fnNode *ast.FuncDecl, expr ast.Expr) {
+	if !c.isError(expr) {
+		return
+	}
+
+	c.setContext(fnNode, expr.Pos()) // set current context
+	c.checkExpr(expr)
 }
 
 // checkExpr checks the generic expression and report.
