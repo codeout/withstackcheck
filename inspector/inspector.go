@@ -75,6 +75,8 @@ func (c *WithStackChecker) checkExpr(expr ast.Expr) {
 		c.checkIdent(expr)
 	case *ast.CallExpr:
 		c.checkCallExpr(expr)
+	case *ast.SelectorExpr:
+		c.checkSelectorExpr(expr)
 	default:
 		panic(fmt.Sprintf("Unimplemented type: %T", expr))
 	}
