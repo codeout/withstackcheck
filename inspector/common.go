@@ -2,6 +2,7 @@ package inspector
 
 import (
 	"go/ast"
+	"strings"
 )
 
 // findAssignExprInFunction scans the whole function node to find the last assignment of the given spec.
@@ -63,4 +64,18 @@ func (c *WithStackChecker) getAssignExprInAssignStmt(assign *ast.AssignStmt, obj
 	}
 
 	return nil
+}
+
+// isExternalPackage checks if the expression is external package call.
+func (c *WithStackChecker) isExternalPackage(expr ast.Expr) bool {
+	callExpr, ok := expr.(*ast.CallExpr)
+	if !ok {
+		return false
+	}
+	selExpr, ok := callExpr.Fun.(*ast.SelectorExpr)
+	if !ok {
+		return false
+	}
+
+	return !strings.Contains(c.pass.TypesInfo.ObjectOf(selExpr.Sel).Pkg().Path(), c.pass.Pkg.Path())
 }
