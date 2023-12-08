@@ -3,6 +3,7 @@ package inspector
 import (
 	"fmt"
 	"go/ast"
+	"strings"
 )
 
 // checkCallExpr checks the call expression and report.
@@ -53,5 +54,5 @@ func (c *WithStackChecker) isExternalPackage(expr ast.Expr) bool {
 		return false
 	}
 
-	return c.pass.TypesInfo.ObjectOf(selExpr.Sel).Pkg().Path() != c.pass.Pkg.Path()
+	return !strings.Contains(c.pass.TypesInfo.ObjectOf(selExpr.Sel).Pkg().Path(), c.pass.Pkg.Path())
 }
