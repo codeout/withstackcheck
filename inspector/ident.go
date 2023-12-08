@@ -9,7 +9,6 @@ import (
 func (c *WithStackChecker) checkIdent(ident *ast.Ident) {
 	switch decl := ident.Obj.Decl.(type) {
 	case *ast.ValueSpec:
-		// need to find var assignments when "var err error" is found
 		c.checkValueSpec(decl)
 	case *ast.AssignStmt:
 		expr := c.findAssignExprInFunction(ident.Obj.Decl)
