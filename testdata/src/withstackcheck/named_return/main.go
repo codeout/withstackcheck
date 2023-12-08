@@ -13,12 +13,17 @@ func externalError() (err error) {
 		return // want `error without stacktrace returned from external package`
 	}
 
-	// short declaration
-	if _, err := json.Marshal(nil); err != nil {
+	return nil
+}
+
+func externalErrorWithOtherReturns() (other1, err, other2 error) {
+	// var declaration
+	_, err = json.Marshal(nil)
+	if err != nil {
 		return // want `error without stacktrace returned from external package`
 	}
 
-	return nil
+	return nil, nil, nil
 }
 
 func internalError() (err error) {
@@ -28,12 +33,17 @@ func internalError() (err error) {
 		return
 	}
 
-	// short declaration
-	if err := throw(); err != nil {
+	return nil
+}
+
+func internalErrorWithOtherReturns() (other1, err, other2 error) {
+	// var declaration
+	err = throw()
+	if err != nil {
 		return
 	}
 
-	return nil
+	return nil, nil, nil
 }
 
 func throw() error {

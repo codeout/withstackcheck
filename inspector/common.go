@@ -11,6 +11,12 @@ func (c *WithStackChecker) findAssignExprInFunction(obj any) ast.Expr {
 	})
 }
 
+func (c *WithStackChecker) findAssignExprToNamedReturnInFunction(obj *ast.Ident) ast.Expr {
+	return c.findAssignExprInFunctionGeneric(obj, func(ident *ast.Ident) bool {
+		return ident.Name != obj.Name
+	})
+}
+
 func (c *WithStackChecker) findAssignExprInFunctionGeneric(obj any, skipCond func(ident *ast.Ident) bool) ast.Expr {
 	var ret ast.Expr
 

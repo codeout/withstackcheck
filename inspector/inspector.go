@@ -17,9 +17,10 @@ type WithStackChecker struct {
 	withStackError    string
 
 	// current context
-	funcNode    *ast.FuncDecl
-	pos         token.Pos // original position of the return statement
-	inWithStack bool
+	funcNode     *ast.FuncDecl
+	namedReturns []*ast.Ident
+	pos          token.Pos // original position of the return statement
+	inWithStack  bool
 }
 
 func (c *WithStackChecker) PreorderedFuncDecl(f func(ast.Node)) {
@@ -31,6 +32,9 @@ func (c *WithStackChecker) PreorderedFuncDecl(f func(ast.Node)) {
 
 // CheckErrorReturns returns all return statements that return an error.
 func (c *WithStackChecker) CheckErrorReturns(fnNode *ast.FuncDecl) {
+	// Find named returns. If it doesn't exist, set empty slice.
+	c.setNamedReturns(fnNode.Type.Results.List)
+
 	ast.Inspect(fnNode, func(node ast.Node) bool {
 		ret, ok := node.(*ast.ReturnStmt)
 		if !ok {
@@ -39,6 +43,14 @@ func (c *WithStackChecker) CheckErrorReturns(fnNode *ast.FuncDecl) {
 
 		for _, expr := range ret.Results {
 			c.checkIfError(fnNode, expr)
+		}
+
+		// if black "return" is found and there is any named return, handle the return as named
+		if len(ret.Results) == 0 {
+			for _, namedRet := range c.namedReturns {
+				namedRet.NamePos = ret.Pos() // use position of the "return"
+				c.checkIfError(fnNode, namedRet)
+			}
 		}
 
 		return false
@@ -57,6 +69,8 @@ func (c *WithStackChecker) checkIfError(fnNode *ast.FuncDecl, expr ast.Expr) {
 // checkExpr checks the generic expression and report.
 func (c *WithStackChecker) checkExpr(expr ast.Expr) {
 	switch expr := expr.(type) {
+	case nil:
+		return // mark passed
 	case *ast.Ident:
 		c.checkIdent(expr)
 	case *ast.CallExpr:
@@ -74,6 +88,15 @@ func (c *WithStackChecker) setContext(fnNode *ast.FuncDecl, pos token.Pos) {
 
 func (c *WithStackChecker) enterWithStack() {
 	c.inWithStack = true
+}
+
+func (c *WithStackChecker) setNamedReturns(fields []*ast.Field) {
+	var namedReturns []*ast.Ident
+	for _, field := range fields {
+		namedReturns = append(namedReturns, field.Names...)
+	}
+
+	c.namedReturns = namedReturns
 }
 
 func (c *WithStackChecker) isError(expr ast.Expr) bool {
