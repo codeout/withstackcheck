@@ -3,7 +3,6 @@ package withstackcheck
 import (
 	"go/ast"
 
-	"github.com/k0kubun/pp"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 
@@ -35,7 +34,6 @@ func run(pass *analysis.Pass) (any, error) {
 			return
 		}
 
-		pp.Println(f, "<<< whole func")
 		checker.CheckErrorReturns(fnDecl)
 	})
 
