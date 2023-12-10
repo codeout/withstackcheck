@@ -33,7 +33,7 @@ func (c *WithStackChecker) PreorderedFuncDecl(f func(ast.Node)) {
 // CheckErrorReturns returns all return statements that return an error.
 func (c *WithStackChecker) CheckErrorReturns(fnNode *ast.FuncDecl) {
 	// Find named returns. If it doesn't exist, set empty slice.
-	c.setNamedReturns(fnNode.Type.Results.List)
+	c.setNamedReturns(fnNode.Type.Results)
 
 	ast.Inspect(fnNode, func(node ast.Node) bool {
 		ret, ok := node.(*ast.ReturnStmt)
@@ -92,9 +92,14 @@ func (c *WithStackChecker) enterWithStack() {
 	c.inWithStack = true
 }
 
-func (c *WithStackChecker) setNamedReturns(fields []*ast.Field) {
+func (c *WithStackChecker) setNamedReturns(results *ast.FieldList) {
+	if results == nil || len(results.List) == 0 {
+		c.namedReturns = nil
+		return
+	}
+
 	var namedReturns []*ast.Ident
-	for _, field := range fields {
+	for _, field := range results.List {
 		namedReturns = append(namedReturns, field.Names...)
 	}
 
