@@ -38,7 +38,7 @@ func (c *WithStackChecker) findAssignExprInFunctionGeneric(obj any, skipCond fun
 			return false
 		}
 
-		return false
+		return true // for func assignment
 	})
 
 	return ret
