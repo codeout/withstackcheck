@@ -17,6 +17,8 @@ func (c *WithStackChecker) checkIdent(ident *ast.Ident) {
 		expr := c.findAssignExprToNamedReturnInFunction(ident)
 		c.checkExpr(expr)
 	default:
-		log.Panicf("Unimplemented type: %T", ident.Obj.Decl)
+		if c.config.General.Debug {
+			log.Panicf("Unimplemented type: %T", ident.Obj.Decl)
+		}
 	}
 }

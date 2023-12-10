@@ -54,7 +54,9 @@ func (c *WithStackChecker) getAssignExprInAssignStmt(assign *ast.AssignStmt, obj
 	}
 
 	if len(assign.Lhs) != len(assign.Rhs) {
-		panic("Unmatched length of lhs and rhs")
+		if c.config.General.Debug {
+			panic("Unmatched length of lhs and rhs")
+		}
 	}
 
 	for i, expr := range assign.Lhs {

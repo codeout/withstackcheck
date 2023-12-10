@@ -8,6 +8,8 @@ import (
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 	"golang.org/x/tools/go/ast/inspector"
+
+	"github.com/codeout/withstackcheck/config"
 )
 
 type WithStackChecker struct {
@@ -15,6 +17,7 @@ type WithStackChecker struct {
 	inspector         *inspector.Inspector
 	withoutStackError string
 	withStackError    string
+	config            *config.Config
 
 	// current context
 	funcNode     *ast.FuncDecl
@@ -78,7 +81,9 @@ func (c *WithStackChecker) checkExpr(expr ast.Expr) {
 	case *ast.SelectorExpr:
 		c.checkSelectorExpr(expr)
 	default:
-		log.Panicf("Unimplemented type: %T", expr)
+		if c.config.General.Debug {
+			log.Panicf("Unimplemented type: %T", expr)
+		}
 	}
 }
 
@@ -122,5 +127,6 @@ func New(pass *analysis.Pass, withoutStackError string, withStackError string) *
 		inspector:         pass.ResultOf[inspect.Analyzer].(*inspector.Inspector),
 		withoutStackError: withoutStackError,
 		withStackError:    withStackError,
+		config:            config.Get(),
 	}
 }
