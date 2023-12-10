@@ -1,0 +1,27 @@
+name: Lint, Test & Build
+on: [push, pull_request]
+
+jobs:
+  lint-test-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ^1.21
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          args: --timeout=5m
+
+      - name: Test
+        run: make test
+
+      - name: Build
+        run: make build
