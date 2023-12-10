@@ -69,6 +69,7 @@ func (c *WithStackChecker) check(fnNode *ast.FuncDecl, expr ast.Expr) {
 }
 
 // checkExpr checks the generic expression and report.
+// Defined here as it's entrypoint.
 func (c *WithStackChecker) checkExpr(expr ast.Expr) {
 	switch expr := expr.(type) {
 	case nil:
@@ -88,10 +89,6 @@ func (c *WithStackChecker) setContext(fnNode *ast.FuncDecl, pos token.Pos) {
 	c.funcNode = fnNode
 	c.pos = pos
 	c.inWithStack = false
-}
-
-func (c *WithStackChecker) enterWithStack() {
-	c.inWithStack = true
 }
 
 func (c *WithStackChecker) setNamedReturns(results *ast.FieldList) {

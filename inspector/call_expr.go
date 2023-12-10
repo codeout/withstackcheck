@@ -35,6 +35,10 @@ func (c *WithStackChecker) checkCallExpr(callExpr *ast.CallExpr) {
 	}
 }
 
+func (c *WithStackChecker) enterWithStack() {
+	c.inWithStack = true
+}
+
 // isWithStack checks if the call expression is errors.WithStack().
 func (c *WithStackChecker) isWithStack(expr *ast.CallExpr) bool {
 	selExpr, ok := expr.Fun.(*ast.SelectorExpr)
