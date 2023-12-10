@@ -11,10 +11,10 @@ func (c *WithStackChecker) checkIdent(ident *ast.Ident) {
 		c.checkValueSpec(decl)
 	case *ast.AssignStmt:
 		expr := c.findAssignExprInFunction(ident.Obj.Decl)
-		c.checkExpr(expr)
+		c.checkExpr(expr) // recheck
 	case *ast.Field: // named return
 		expr := c.findAssignExprToNamedReturnInFunction(ident)
-		c.checkExpr(expr)
+		c.checkExpr(expr) // recheck
 	default:
 		c.panicf("Unimplemented type: %T at %s", ident.Obj.Decl, c.pass.Fset.Position(c.pos))
 	}
