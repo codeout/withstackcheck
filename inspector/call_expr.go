@@ -26,7 +26,7 @@ func (c *WithStackChecker) checkCallExpr(callExpr *ast.CallExpr) {
 			}
 		default:
 			if c.config.General.Debug {
-				log.Panicf("Unimplemented type: %T", expr)
+				log.Panicf("Unimplemented type: %T at %s", expr, c.pass.Fset.Position(c.pos))
 			}
 		}
 

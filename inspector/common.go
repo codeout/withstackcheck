@@ -2,6 +2,7 @@ package inspector
 
 import (
 	"go/ast"
+	"log"
 	"strings"
 )
 
@@ -55,7 +56,7 @@ func (c *WithStackChecker) getAssignExprInAssignStmt(assign *ast.AssignStmt, obj
 
 	if len(assign.Lhs) != len(assign.Rhs) {
 		if c.config.General.Debug {
-			panic("Unmatched length of lhs and rhs")
+			log.Panicf("Unmatched length of lhs and rhs at %s", c.pass.Fset.Position(c.pos))
 		}
 	}
 
