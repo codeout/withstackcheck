@@ -82,6 +82,9 @@ func (c *WithStackChecker) checkExpr(expr ast.Expr) {
 		c.checkSelectorExpr(expr)
 	case *ast.TypeAssertExpr:
 		c.checkExpr(expr.X) // recheck
+	case *ast.IndexExpr:
+		// TODO: Implement. Can we get array entries with ast package?
+		return
 	default:
 		c.panicf("Unimplemented type: %T at %s", expr, c.pass.Fset.Position(c.pos))
 	}

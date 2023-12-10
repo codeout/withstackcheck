@@ -21,4 +21,6 @@ func TestAnalyzer(t *testing.T) {
 	analysistest.Run(t, testdata, withstackcheck.Analyzer, "withstackcheck/anonymous_func")
 	analysistest.Run(t, testdata, withstackcheck.Analyzer, "withstackcheck/anonymous_func_with_mixed_var_scope")
 	analysistest.Run(t, testdata, withstackcheck.Analyzer, "withstackcheck/type_assert")
+	// TODO: implement check for *ast.indexExpr
+	// analysistest.Run(t, testdata, withstackcheck.Analyzer, "withstackcheck/index")
 }
