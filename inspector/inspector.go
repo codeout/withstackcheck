@@ -3,7 +3,6 @@ package inspector
 import (
 	"go/ast"
 	"go/token"
-	"log"
 
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
@@ -81,9 +80,7 @@ func (c *WithStackChecker) checkExpr(expr ast.Expr) {
 	case *ast.SelectorExpr:
 		c.checkSelectorExpr(expr)
 	default:
-		if c.config.General.Debug {
-			log.Panicf("Unimplemented type: %T at %s", expr, c.pass.Fset.Position(c.pos))
-		}
+		c.panicf("Unimplemented type: %T at %s", expr, c.pass.Fset.Position(c.pos))
 	}
 }
 

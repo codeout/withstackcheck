@@ -55,9 +55,7 @@ func (c *WithStackChecker) getAssignExprInAssignStmt(assign *ast.AssignStmt, obj
 	}
 
 	if len(assign.Lhs) != len(assign.Rhs) {
-		if c.config.General.Debug {
-			log.Panicf("Unmatched length of lhs and rhs at %s", c.pass.Fset.Position(c.pos))
-		}
+		c.panicf("Unmatched length of lhs and rhs at %s", c.pass.Fset.Position(c.pos))
 	}
 
 	for i, expr := range assign.Lhs {
@@ -81,4 +79,10 @@ func (c *WithStackChecker) isExternalPackage(expr ast.Expr) bool {
 	}
 
 	return !strings.Contains(c.pass.TypesInfo.ObjectOf(selExpr.Sel).Pkg().Path(), c.pass.Pkg.Path())
+}
+
+func (c *WithStackChecker) panicf(format string, v ...any) {
+	if c.config.General.Debug {
+		log.Panicf(format, v...)
+	}
 }
