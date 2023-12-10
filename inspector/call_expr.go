@@ -20,6 +20,10 @@ func (c *WithStackChecker) checkCallExpr(callExpr *ast.CallExpr) {
 			if !c.isExternalPackage(expr) {
 				c.pass.Reportf(c.pos, c.withStackError)
 			}
+		case *ast.CallExpr:
+			if !c.isExternalPackage(expr) {
+				c.pass.Reportf(c.pos, c.withStackError)
+			}
 		default:
 			panic(fmt.Sprintf("Unimplemented type: %T", expr))
 		}

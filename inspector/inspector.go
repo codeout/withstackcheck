@@ -42,14 +42,14 @@ func (c *WithStackChecker) CheckErrorReturns(fnNode *ast.FuncDecl) {
 		}
 
 		for _, expr := range ret.Results {
-			c.checkIfError(fnNode, expr)
+			c.check(fnNode, expr)
 		}
 
 		// if black "return" is found and there is any named return, handle the return as named
 		if len(ret.Results) == 0 {
 			for _, namedRet := range c.namedReturns {
 				namedRet.NamePos = ret.Pos() // use position of the "return"
-				c.checkIfError(fnNode, namedRet)
+				c.check(fnNode, namedRet)
 			}
 		}
 
@@ -57,8 +57,8 @@ func (c *WithStackChecker) CheckErrorReturns(fnNode *ast.FuncDecl) {
 	})
 }
 
-func (c *WithStackChecker) checkIfError(fnNode *ast.FuncDecl, expr ast.Expr) {
-	if !c.isError(expr) {
+func (c *WithStackChecker) check(fnNode *ast.FuncDecl, expr ast.Expr) {
+	if _, ok := expr.(*ast.CallExpr); !ok && !c.isError(expr) {
 		return
 	}
 
