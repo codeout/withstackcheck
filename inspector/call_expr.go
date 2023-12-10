@@ -6,7 +6,7 @@ import (
 
 // checkCallExpr checks the call expression and report.
 func (c *WithStackChecker) checkCallExpr(callExpr *ast.CallExpr) {
-	if c.inWithStack || c.isWithStack(callExpr) {
+	if c.isWithStack(callExpr) {
 		c.enterWithStack()
 
 		switch expr := callExpr.Args[0].(type) {
@@ -23,6 +23,8 @@ func (c *WithStackChecker) checkCallExpr(callExpr *ast.CallExpr) {
 			if !c.isExternalPackage(expr) {
 				c.pass.Reportf(c.pos, c.withStackError)
 			}
+		case *ast.TypeAssertExpr:
+			c.checkExpr(expr.X) // recheck
 		default:
 			c.panicf("Unimplemented type: %T at %s", expr, c.pass.Fset.Position(c.pos))
 		}
@@ -30,8 +32,15 @@ func (c *WithStackChecker) checkCallExpr(callExpr *ast.CallExpr) {
 		return
 	}
 
-	if c.isExternalPackage(callExpr) {
-		c.pass.Reportf(c.pos, c.withoutStackError)
+	// for call expression which is not errors.WithStack(), just need to check if it's external
+	if c.inWithStack {
+		if !c.isExternalPackage(callExpr) {
+			c.pass.Reportf(c.pos, c.withStackError)
+		}
+	} else {
+		if c.isExternalPackage(callExpr) {
+			c.pass.Reportf(c.pos, c.withoutStackError)
+		}
 	}
 }
 

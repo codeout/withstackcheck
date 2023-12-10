@@ -80,6 +80,8 @@ func (c *WithStackChecker) checkExpr(expr ast.Expr) {
 		c.checkCallExpr(expr)
 	case *ast.SelectorExpr:
 		c.checkSelectorExpr(expr)
+	case *ast.TypeAssertExpr:
+		c.checkExpr(expr.X) // recheck
 	default:
 		c.panicf("Unimplemented type: %T at %s", expr, c.pass.Fset.Position(c.pos))
 	}
