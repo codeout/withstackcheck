@@ -1,8 +1,8 @@
 package inspector
 
 import (
-	"fmt"
 	"go/ast"
+	"log"
 )
 
 // checkIdent checks the identifier and report.
@@ -17,6 +17,6 @@ func (c *WithStackChecker) checkIdent(ident *ast.Ident) {
 		expr := c.findAssignExprToNamedReturnInFunction(ident)
 		c.checkExpr(expr)
 	default:
-		panic(fmt.Sprintf("Unimplemented type: %T", ident.Obj.Decl))
+		log.Panicf("Unimplemented type: %T", ident.Obj.Decl)
 	}
 }

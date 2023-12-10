@@ -1,8 +1,8 @@
 package inspector
 
 import (
-	"fmt"
 	"go/ast"
+	"log"
 )
 
 // checkCallExpr checks the call expression and report.
@@ -25,7 +25,7 @@ func (c *WithStackChecker) checkCallExpr(callExpr *ast.CallExpr) {
 				c.pass.Reportf(c.pos, c.withStackError)
 			}
 		default:
-			panic(fmt.Sprintf("Unimplemented type: %T", expr))
+			log.Panicf("Unimplemented type: %T", expr)
 		}
 
 		return
